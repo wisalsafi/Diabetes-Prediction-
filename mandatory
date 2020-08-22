@@ -1,0 +1,179 @@
+
+  
+				<div class="row">
+				
+                  
+	                  
+                  <div class="col-md-12">
+                      <div class="content-panel">
+                          <table class="table table-striped table-advance table-hover">
+	                  	  	  <hr>
+                              <thead>
+							  <!-- form is created for getting values from user -->
+							   <form  name="chkvalues" method="post" action="">
+                              <tr>
+                                  
+                                 
+								  <?php
+								  // the purpose of this part of php block is to check the gender of user if is male than generate hidden text filed and assign valu to it as 0
+								  // if the patitent is female than pregnancy text will be visible
+								  $session=$_SESSION['id'];
+								  $servername = "localhost";
+                                  $username = "root";
+                                  $password = "";
+                                  $dbname = "diabeties";
+                                  // Create connection
+                                  $conn = new mysqli($servername, $username, $password, $dbname);
+                                  $sql = "SELECT * from users where id='$session'";
+                                  $result = $conn->query($sql);
+								  while($row = $result->fetch_assoc())
+							  {
+								  
+								  if($row['gender']=="Male")
+								  {
+									  echo "<input type='hidden'  name='preg' value='0' readonly>";
+								  }
+								  else 
+								  {
+									  echo "<th>Pregnancy</th> <td><div class='col-sm-10'>";
+									  echo "<input type='number' value='0'  name='preg'>";
+								  }
+								   
+								   
+							  } 
+							  // end of the block description
+							  ?>
+                              </div>
+							
+                              </tr>	
+							  <tr>
+                                  <th>Plasma</th> 
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="plas" value='0' > <!-- input field for Plasma collection-->
+                              </div>
+                              </tr>
+                                <tr>
+                                  <th>Blood Pressure</th> 
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="pres" value='0'><!-- input field for Blood Pressure collection-->
+                              </div>
+                              </tr>	
+							  <tr>
+                                  <th>Skin</th> 
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="skin" value='0'><!-- input field for Skin collection-->
+                              </div>
+                              </tr>
+							  
+							  <tr>
+                                  <th>Insulin</th> 						
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="insu" value='0'><!-- input field for Insulin collection-->
+                              </div>
+                              </tr>	
+							  <tr>
+                                  <th>Mass</th> 
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="mass" value='0'><!-- input field for Mass collection-->
+                              </div>
+                              </tr>
+                                <tr>
+                                  <th>Pedi</th> 
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="pedi" value='0'><!-- input field for Pedi collection-->
+                              </div>
+                              </tr>	
+							  <tr>
+                                  <th>Age</th> 									<!-- input field for age collection-->
+                                   <td><div class="col-sm-1">
+                                  <input type="number"  name="age" value='0'>
+                              </div>
+                              </tr>
+                               <tr>
+                                  <th>Class</th> 								<!-- input field for Class collection, here a php script is used for to validate the Class value as test_positive or test_negative-->
+                                   <td><div class="col-sm-10">				
+                               <?php
+								  if(isset($_POST['chkvalues']))
+{	
+$preg=$_POST['preg'];
+$plas=$_POST['plas'];
+$pres=$_POST['pres'];
+$skin=$_POST['skin'];
+$insu=$_POST['insu'];
+$mass=$_POST['mass'];
+$pedi=$_POST['pedi'];
+$age=$_POST['age'];
+$id=$_SESSION['id'];
+$name=$_SESSION['name']; 
+$counter=0;   
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "diabeties";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+$sql="SELECT * FROM diabetic";
+$result = $conn->query($sql);
+while($row = $result->fetch_assoc())				
+	  {
+$samples[$counter]=[$row['pregnancy'],$row['plasma'],$row['bloodpressure'],$row['skin'],$row['insulin'],$row['mass'],$row['pedi'],$row['age']]; //collection of dataset from table in array for passing it to Descision Tree
+$labels[$counter]=$row['class'];//collection of test_positive and test_negative from table in array for passing it to Descision Tree
+$counter++;}
+$classifier = new DecisionTree();
+$classifier->train($samples, $labels);
+$class=$classifier->predict([$preg,$plas,$pres,$skin,$insu,$mass,$pedi,$age]);
+echo $class;
+$sql="INSERT INTO patient(id,patient_name,preg,plas,pres,skin,insu,mass,pedi,age,class)			
+VALUES('$id','$name','$preg','$plas','$pres','$skin','$insu','$mass','$pedi','$age','$class')"; //this query will add the submitted data and the predited result
+$conn->query($sql);
+$conn->close();
+
+}
+else
+{
+	 echo "Wait for Result Please fill the above record";
+}
+?>
+                          </div>
+                              </tr>
+							  <tr>
+                                  <th><div style="margin-left:100%;">
+                          <input type="submit" name="chkvalues" value="Check" class="btn btn-theme"></div></th> 
+                                   
+                              </tr>
+							 
+							  </form>
+							  <!-- end form is created for getting values from user -->
+                              </thead>
+							 
+                              <tbody>
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+		</section>
+      </section
+  ></section>
+    <script src="assets/js/jquery.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
+    <script src="assets/js/jquery.scrollTo.min.js"></script>
+    <script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
+    <script src="assets/js/common-scripts.js"></script>
+  <script>
+      $(function(){
+          $('select.styled').customSelect();
+      });
+
+  </script>
+
+  </body>
+</html>
+
+        </div>
+
+        <hr>
+
+
+    </div>
